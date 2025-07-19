@@ -1,0 +1,20 @@
+services:
+    main:
+        image: epoch
+        container_name: epoch_analysis
+        build:
+            context: .
+            dockerfile: Dockerfile.epoch
+        volumes:
+          - type: bind
+            source: ./data
+            target: /data
+          - /tmp/.X11-unix:/tmp/.X11-unix
+        environment:
+          - DISPLAY=host.docker.internal:0
+        command: /bin/bash
+        restart: unless-stopped
+        ports:
+          - 8888:8888
+        tty: true
+        stdin_open: true

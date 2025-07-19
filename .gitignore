@@ -1,0 +1,44 @@
+# Ignore everything by default
+*
+
+# --- Exceptions: files/folders to be tracked --- #
+!README.md
+!LICENSE
+!.gitignore
+!requirements.txt
+
+# Python scripts and shell scripts in root
+!bashrc-docker
+!compose.yaml
+!Dockerfile.epoch
+!vimrc-docker
+
+
+# Explicitly include this directory and its contents
+!data/
+!data/input.deck
+!data/runep.sh
+!data/pltpoac.py
+!data/pltsnglni.py
+
+
+
+# --- Common auto-generated and temporary files --- #
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Log, output, and image/video files
+*.log
+*.out
+*.txt
+*.png
+*.pdf
+*.mp4
+
+# Editor or OS-specific temp files
+*.swp
+*.bak
+.DS_Store
+

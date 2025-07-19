@@ -1,0 +1,25 @@
+# If you wanna add environmental variables, write here.
+export TERM=xterm-256color
+export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\n\[\e[1;31mCONTAINER \]\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\n\[\e[0;35m\]> \[\e[m\]"
+
+
+# Aliases of terminal utilities
+alias ls='ls --color=auto'
+alias la='ls -A'
+alias lf='ls -lh'
+alias dff='df -lh'
+alias dus='du -sh'
+alias cd='cdls'
+alias ks='ls'
+alias ipython="python -m IPython"
+alias jn="jupyter notebook --port=8888 --ip=0.0.0.0 --allow-root --NotebookApp.token=''"
+
+
+# If you wanna define your own functions, write here.
+function cdls () {
+	\cd "$1";
+	if [ $? -eq 0 ]; then
+		ls;
+	fi
+}
+

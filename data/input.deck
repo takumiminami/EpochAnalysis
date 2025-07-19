@@ -1,0 +1,171 @@
+#From this input, two targets are the same material. 
+begin:control
+  nx = 5600
+  ny = 800
+
+  # final time of simulation
+  t_end =  600 * femto
+
+  # size of domain
+  x_min = -20 * micron
+  x_max = 50 * micron
+  y_min = -20 * micron
+  y_max = 20 * micron
+#  field_ionisation = T
+
+  dlb_threshold = 0.8
+  stdout_frequency = 100
+
+#  restart_snapshot = 25  
+#  stdout_frequency = 100
+end:control
+ 
+begin:boundaries
+  bc_x_min = simple_laser
+  bc_x_max = open
+  bc_y_min = open
+  bc_y_max = open
+end:boundaries
+
+
+# ----- constants ----- #
+begin:constant
+    Te=1e0 #10e-1 #ev
+    Tp=1e0 #10e-1 #ev
+    Tc=1e0 #10e-1 #ev
+    pmass=1836.2
+    pcharge=1 #0
+    cmass=1836.2*12.0
+    ccharge=6 #0
+end:constant
+
+begin:constant
+    diff_rate = 1
+
+    # target constant
+    lg = 0 * micron # distance between LSG and CNT
+    target_density = 3.78e29 / diff_rate
+    n_cell = 30  # npart_per_cell
+
+    # target 1
+    target_thick1= diff_rate * 60.0*nano
+    x_low1=0*micron
+    x_up1=x_low1+target_thick1
+    y_low=y_min 
+    y_up=y_max 
+
+    # target 2
+    target_thick2=0.0*nano
+    x_low2=0*micron + lg
+    x_up2=x_low2+target_thick2
+
+    # target 3
+    target_thick3=0.0*nano
+    x_low3=0*micron + lg*2
+    x_up3=x_low3+target_thick3
+end:constant
+
+begin:constant
+    # laser_constant
+	lambda_laser = 0.810*micron
+    period_laser = lambda_laser / 2.998e+8
+	intensity_laser = 3e+21
+	spot_size = 2*micron              # Spot size (fwhm)
+	focus_pos = 0*micron           # The position of maximum focused point
+	pulse_d = 40*femto                  # pulse duration (fwhm)
+
+	#These are the parameters calculated for driving the laser
+	#These should not need to be modified
+	# F# = 0.5*f_length/w_bnd
+	sigma = spot_size /sqrt(2.0*loge(2.0))               # spotsize(fwhm)=sigma*2sqrt(ln2) (sigma is 1/e point)
+	f_length = focus_pos - x_min                        # Distance from x_min to spot 
+	x_R = pi * sigma^2 / lambda_laser                   # Reyleigh range
+	RC = f_length * (1.0 + (x_R/f_length)^2)            # Radius of curvature on x_min
+	w_bnd = sigma * sqrt(1.0 + (f_length/x_R)^2)        # Spot size at x_min
+	gouy = atan(f_length/x_R)                           # Gouy phase shift at x_min
+    wt0 = pulse_d /sqrt(2.0*loge(2.0))                   # 1/e point of laser time profile
+end:constant
+
+# ----- laser ----- #
+begin:laser
+    boundary = x_min
+    intensity_w_cm2 = intensity_laser * (sigma / w_bnd)
+    lambda = lambda_laser
+    phase = 2.0 * pi/ lambda_laser * y^2 / (2.0 * RC) - gouy
+    t_profile = gauss(time, 2*wt0, wt0)  # pulse_duration
+    t_end = end
+    profile = gauss(y,0,w_bnd)
+    pol_angle = 0
+end:laser
+
+
+# ----- target ----- #
+begin:species
+  name = carbon
+  charge = ccharge
+  mass = cmass
+  temp=Tc*11604
+  npart_per_cell = n_cell
+  density = if((x gt x_low1 and x lt x_up1), target_density*0.65/4.25, 0.0)
+#  ionisation_energies = (11.26030*ev, 24.383332*ev, 47.8878*ev, 64.4939*ev, 392.087*ev, 489.99334*ev)
+#  ionisation_electron_species = electron
+  dump = T
+end:species
+
+begin:species
+  name = proton
+  charge = pcharge
+  mass = pmass
+  temp=Tp*11604
+  npart_per_cell = n_cell
+  density = if((x gt x_low1 and x lt x_up1), target_density*0.35/4.25, 0.0)
+#	ionisation_energies = (13.6*ev)
+#	ionisation_electron_species = electron
+  dump = T
+end:species
+
+begin:species
+  name = electron
+  charge = -1
+  mass = 1 #electrons
+  temp = Te*11604
+  npart_per_cell = n_cell
+  density=0.0
+#  density = if(x gt x_low1 and x lt x_up1 and y gt y_low and y lt y_up, target_density, 0.0)
+  density = 6*density(carbon) + density(proton)
+  dump = T
+end:species
+
+
+# ----- output ----- #
+begin:output
+  # number of timesteps between output dumps
+  dt_snapshot = 5 * femto
+#  force_final_to_be_restartable = T
+  restart_dump_every=25
+
+# Properties at particle positions 
+#    particles = always
+    particle_grid = always + single
+    px = always + single
+    py = always + single
+    pz = always + single
+    id = always + single
+#    gamma = always
+#    particle_energy = always 
+
+# Properties on grid
+    grid = always + single
+    ex = always + single
+    ey = always + single
+    ez = always + single
+    bx = always + single
+    by = always + single
+    bz = always + single
+
+    charge_density = always + single 
+    number_density =  always + species + single
+#    temperature = always + species
+    ekbar = always + species + single
+    poynt_flux = always + single
+end:output
