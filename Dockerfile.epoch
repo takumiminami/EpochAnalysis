@@ -31,7 +31,9 @@ RUN cd /opt/epoch/epoch3d/src \
     && sed -i -e "s/string_length\ =\ 256/string_length\ =\ 100000/g" constants.F90 \ 
     && cd /opt/epoch/epoch3d \
     && make -j 32 DEFINE="-DPARTICLE_ID" COMPILER=gfortran
-ENV PATH=/opt/epoch/epoch3d/bin:/opt/epoch/epoch2d/bin:/opt/epoch/epoch1d/bin:${PATH}
+ENV PATH=/opt/epoch/epoch3d/bin:/opt/epoch/epoch2d/bin:/opt/epoch/epoch1d/bin:${PATH} \
+    OMPI_ALLOW_RUN_AS_ROOT=1 \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 
 
 # sdfutils
 RUN apt install -y pip 

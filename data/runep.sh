@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PLTPY=pltsnglni-v171.py
-version="_v41716"
+version=""
 
 if [ $# -eq 1 ]; then
     case $1 in
@@ -75,7 +75,7 @@ echo ${PWD} > deck.file
 EXELOG="execute.log"
 {
     echo "----------------------------"
-	echo "EPOCH${dim}D ${version}"
+    echo "EPOCH${dim}D ${version}"
     echo "start time : "`LANG=US.UTF-8 date`
     echo "Output     : "${fname}
     echo "Processes  : "${thr:=1}
@@ -85,10 +85,10 @@ PLTLOG=plot$(printf "%04d" $index).log
 
 setStarttime
 if [ -z "${thr}" ]; then
-	nohup epoch${dim}d${version} < deck.file > ${name} && getEndtime >> ${EXELOG} && \
+    nohup epoch${dim}d${version} < deck.file > ${name} && getEndtime >> ${EXELOG} && \
     setStarttime && ./${PLTPY} &> ${PLTLOG} && getEndtime >> ${PLTLOG} &
 else
-	nohup mpirun -np ${thr:=1} epoch${dim}d${version}${qed} < deck.file > ${name} && getEndtime >> ${EXELOG} && \
+    nohup mpirun -np ${thr:=1} epoch${dim}d${version}${qed} < deck.file > ${name} && getEndtime >> ${EXELOG} && \
     setStarttime && ./${PLTPY} &> ${PLTLOG} && getEndtime >> ${PLTLOG} &
 fi
 

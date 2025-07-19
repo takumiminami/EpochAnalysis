@@ -140,9 +140,9 @@ end:species
 # ----- output ----- #
 begin:output
   # number of timesteps between output dumps
-  dt_snapshot = 5 * femto
+  dt_snapshot = 25 * femto
 #  force_final_to_be_restartable = T
-  restart_dump_every=25
+  restart_dump_every=-1
 
 # Properties at particle positions 
 #    particles = always
